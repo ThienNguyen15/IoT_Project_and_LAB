@@ -94,3 +94,90 @@ for device in DEVICES:
 # Keep the main thread running
 for t in threads:
     t.join()
+
+
+# import paho.mqtt.client as mqtt
+# import time
+# import json
+# import threading
+
+# BROKER_ADDRESS = "app.coreiot.io"
+# PORT = 1883
+
+# DEVICES = [
+#     {"client_id": "IOT_DEVICE_1", "username": "iot_device1", "token": "csek21"},
+# ]
+
+# def on_connect(client, userdata, flags, rc):
+#     if rc == 0:
+#         print(f"[{userdata['username']}] Connected successfully!")
+#         client.subscribe("v1/devices/me/rpc/request/+")
+#     else:
+#         print(f"[{userdata['username']}] Connection failed! (rc={rc})")
+
+# def on_subscribe(client, userdata, mid, granted_qos):
+#     print(f"[{userdata['username']}] Subscribed successfully!")
+
+# def on_message(client, userdata, message):
+#     payload = message.payload.decode("utf-8")
+#     print(f"[{userdata['username']}] Received: {payload}")
+#     try:
+#         data = json.loads(payload)
+#         if data.get('method') == "setValue":
+#             response = {'value': data.get('params', True)}
+#             client.publish('v1/devices/me/attributes', json.dumps(response), qos=1)
+#     except Exception as e:
+#         print(f"[{userdata['username']}] Error processing message: {e}")
+
+# def publish_data(device_info):
+#     client = mqtt.Client(client_id=device_info["client_id"])
+#     client.username_pw_set(device_info["username"], device_info["token"])
+#     client.user_data_set(device_info)
+
+#     client.on_connect = on_connect
+#     client.on_subscribe = on_subscribe
+#     client.on_message = on_message
+
+#     client.connect(BROKER_ADDRESS, PORT)
+#     client.loop_start()
+
+#     temperature = 26
+#     humidity = 35
+
+#     if device_info["username"] == "iot_device1":
+#         longitude = 106.65789107082472
+#         latitude = 10.772175109674038
+
+#     while True:
+#         telemetry = {
+#             "temperature": temperature,
+#             "humidity": humidity,
+#             "longitude": longitude,
+#             "latitude": latitude
+#         }
+
+#         if humidity >= 40:
+#             created_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+#             telemetry["createdTime"] = created_time
+#             telemetry["originator"] = device_info["username"]
+#             telemetry["type"] = "Critical"
+#             telemetry["severity"] = "Critical"
+#             telemetry["status"] = "Not good"
+
+#         client.publish('v1/devices/me/telemetry', json.dumps(telemetry), qos=1)
+#         print(f"[{device_info['username']}] Published telemetry: {telemetry}")
+
+#         temperature += 1
+#         humidity += 1
+
+#         time.sleep(5)
+
+# if __name__ == '__main__':
+#     threads = []
+#     for device in DEVICES:
+#         t = threading.Thread(target=publish_data, args=(device,))
+#         t.start()
+#         threads.append(t)
+
+#     for t in threads:
+#         t.join()
