@@ -4,6 +4,8 @@
 #include "DHT20.h"
 #include "Wire.h"
 #include <ArduinoOTA.h>
+#include <string>
+#include <time.h>
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -62,8 +64,8 @@ void sensorTask(void *pvParameters);
 
 struct SensorData
 {
-    float temperature;
-    float humidity;
+    float temperature, humidity, longitude, latitude;
+    std::string createdTime, originator, type, severity, status;
 };
 
 // Generate a FreeRTOS queue to hold sensor data messages
@@ -220,6 +222,17 @@ void thingsBoardTask(void *pvParameters)
                     {
                         tb.sendTelemetryData("temperature", newData.temperature);
                         tb.sendTelemetryData("humidity", newData.humidity);
+                        tb.sendTelemetryData("longitude", newData.longitude);
+                        tb.sendTelemetryData("latitude", newData.latitude);
+
+                        if(newData.humidity >= 60)
+                        {
+                            tb.sendTelemetryData("createdTime", newData.createdTime.c_str());
+                            tb.sendTelemetryData("originator", newData.originator.c_str());
+                            tb.sendTelemetryData("type", newData.type.c_str());
+                            tb.sendTelemetryData("severity", newData.severity.c_str());
+                            tb.sendTelemetryData("status", newData.status.c_str());
+                        }
                     }
                 }
             }
@@ -250,6 +263,30 @@ void sensorTask(void *pvParameters)
                 SensorData dataToSend;
                 dataToSend.temperature = temperature;
                 dataToSend.humidity = humidity;
+
+                dataToSend.longitude = 106.65789107082472;
+                dataToSend.latitude = 10.772175109674038;
+
+                if(humidity >= 60)
+                {
+                    struct tm timeinfo;
+                    if (!getLocalTime(&timeinfo))
+                    {
+                        Serial.println("Failed to obtain time");
+                        dataToSend.createdTime = "N/A";
+                    }
+                    else
+                    {
+                        char timeString[64];
+                        strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
+                        dataToSend.createdTime = timeString;
+                    }
+
+                    dataToSend.originator = "IoT Device 01";
+                    dataToSend.type = "Critical";
+                    dataToSend.severity = "Critical";
+                    dataToSend.status = "Not good";
+                }
 
                 if (sensorDataQueue != NULL)
                     xQueueSend(sensorDataQueue, &dataToSend, 0);
