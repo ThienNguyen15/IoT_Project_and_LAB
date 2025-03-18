@@ -15,11 +15,11 @@
 #define SCL_PIN GPIO_NUM_12
 
 // Wi-Fi network credentials
-constexpr char WIFI_SSID[] = "WIFI_NAME";
-constexpr char WIFI_PASSWORD[] = "WIFI_PASSWORD";
+constexpr char WIFI_SSID[] = "Thien1506";
+constexpr char WIFI_PASSWORD[] = "20032003";
 
 // ThingsBoard server configuration
-constexpr char TOKEN[] = "ACCESS_TOKEN";
+constexpr char TOKEN[] = "aymdfnfjok1fbc46xaul";
 constexpr char THINGSBOARD_SERVER[] = "app.coreiot.io";
 constexpr uint16_t THINGSBOARD_PORT = 1883U;
 
