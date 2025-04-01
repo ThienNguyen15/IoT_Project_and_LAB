@@ -10,7 +10,7 @@ BROKER_ADDRESS = "app.coreiot.io"
 PORT = 1883
 
 DEVICES = [
-    {"client_id": "IOT_DEVICE_2", "username": "iot_device2", "token": "csek21"},
+    {"client_id": "NAME", "username": "NAME", "token": "PASS"},
 ]
 
 df = pd.read_csv(r"C:/GIT/IOT LAB/test.csv")
