@@ -62,7 +62,7 @@ def publish_data(device_info):
 
         telemetry_data = {"humidity": round(float(humidity), 4)}
 
-        if len(humi_seq_test) >= n_steps:
+        if len(humi_seq_test) >= n_steps and count % 3 == 0:
             x_input = np.array(humi_seq_test[-n_steps:]).reshape((1, n_steps, n_features))
             predicted_value = model.predict(x_input, verbose=0)[0][0]
             telemetry_data["predicted_humidity"] = round(float(predicted_value), 4)
