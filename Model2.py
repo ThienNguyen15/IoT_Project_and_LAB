@@ -11,7 +11,7 @@ BROKER_ADDRESS = "app.coreiot.io"
 PORT = 1883
 
 DEVICES = [
-    {"client_id": "IOT_DEVICE_2", "username": "iot_device2", "token": "csek21"},
+    {"client_id": "NAME", "username": "NAME", "token": "PASS"},
 ]
 
 model = tf.keras.models.load_model("C:/GIT/IOT LAB/model2.h5", compile=False)
