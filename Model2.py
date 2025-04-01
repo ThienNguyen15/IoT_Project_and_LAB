@@ -2,9 +2,10 @@ import paho.mqtt.client as mqttclient
 import time
 import json
 import threading
-import pandas as pd
 import random
-import re
+import numpy as np
+import pandas as pd
+import tensorflow as tf
 
 BROKER_ADDRESS = "app.coreiot.io"
 PORT = 1883
@@ -13,24 +14,13 @@ DEVICES = [
     {"client_id": "IOT_DEVICE_2", "username": "iot_device2", "token": "csek21"},
 ]
 
-df = pd.read_csv(r"C:/GIT/IOT LAB/test.csv")
-humidity_list = df['Relative_humidity_room'].tolist()[:100]
-temp_list = df['Indoor_temperature_room'].tolist()[:100]
+model = tf.keras.models.load_model("C:/GIT/IOT LAB/model2.h5", compile=False)
+df = pd.read_csv("C:/GIT/IOT LAB/test.csv")
+humidity_data = df["Relative_humidity_room"].values.tolist()
+temperature_data = df["Indoor_temperature_room"].dropna().values.tolist()
 
-predicted_humidity = []
-predicted_temp = []
-
-with open(r"C:/GIT/IOT LAB/predictions2.txt", "r") as f:
-    lines = f.readlines()
-    for i in range(0, len(lines)-3, 4):
-        match_humid = re.search(r"Predicted humidity:\s*([0-9.]+)", lines[i+1])
-        match_temp = re.search(r"Predicted temperature:\s*([0-9.]+)", lines[i+2])
-
-        if match_humid and match_temp:
-            predicted_humidity.append(float(match_humid.group(1)))
-            predicted_temp.append(float(match_temp.group(1)))
-
-assert len(humidity_list) == len(predicted_humidity) == len(temp_list) == len(predicted_temp), "Mismatch data length!"
+n_steps = 3
+n_features = 2
 
 def connected(client, userdata, flags, rc):
     if rc == 0:
@@ -63,26 +53,39 @@ def publish_data(device_info):
     client.connect(BROKER_ADDRESS, PORT)
     client.loop_start()
 
-    idx = 0
-    i = 0
-    while True:
-        if idx > 0 and idx % 3 == 2:
-            data = {
-                "humidity": round(humidity_list[i], 2),
-                "predicted_humidity": round(predicted_humidity[i], 2),
-                "temperature": round(temp_list[i], 2),
-                "predicted_temperature": round(predicted_temp[i], 2)
-            }
-            i += 3
-        else:
-            data = {
-                "humidity": round(humidity_list[idx], 2),
-                "temperature": round(temp_list[idx], 2)
-            }
-        idx += 1
+    humi_seq_test = []
+    temp_seq_test = []
+    count = 0
 
-        client.publish('v1/devices/me/telemetry', json.dumps(data), qos=1)
-        print(f"[{device_info['username']}] Published: {data}")
+    while count < len(humidity_data):
+        random_idx = random.randint(0, len(humidity_data) - 3 - 1)
+        humidity = humidity_data[random_idx]
+        temperature = temperature_data[random_idx]
+
+        humi_seq_test.append(humidity)
+        temp_seq_test.append(temperature)
+
+        count += 1
+
+        telemetry_data = {
+            "humidity": round(float(humidity), 4),
+            "temperature": round(float(temperature), 4)
+        }
+
+        if len(humi_seq_test) >= n_steps and count % 3 == 0:
+            humi_slice = humi_seq_test[-n_steps:]
+            temp_slice = temp_seq_test[-n_steps:]
+
+            x_input = np.vstack((humi_slice, temp_slice)).T
+            x_input = x_input.reshape((1, n_steps, n_features))
+
+            predicted_value = model.predict(x_input, verbose=0)[0]
+            telemetry_data["predicted_humidity"] = round(float(predicted_value[0]), 4)
+            telemetry_data["predicted_temperature"] = round(float(predicted_value[1]), 4)
+
+        client.publish('v1/devices/me/telemetry', json.dumps(telemetry_data), qos=1)
+        print(f"[{device_info['username']}] Published: {telemetry_data}")
+
         time.sleep(1)
 
 threads = []
