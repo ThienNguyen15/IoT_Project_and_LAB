@@ -7,5 +7,6 @@
     "files.associations": {
         "cmath": "cpp",
         "string": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "C:/GIT/IOT LAB/lib/ArduinoJson/src"
 }
