@@ -1,5 +1,5 @@
 *
-!AllThingsBoard.py
-!Model1.py
-!Model2.py
 !Convert Model.py
+!main.cpp
+!model.h
+!platformio.ini
