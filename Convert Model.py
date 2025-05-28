@@ -5,8 +5,6 @@
 
 # # Bypass compile config khi load
 # model = tf.keras.models.load_model("model.h5", compile=False)
-
-# # Nếu cần compile lại trước khi convert:
 # model.compile(optimizer='adam', loss=MeanSquaredError())
 
 # converter = tf.lite.TFLiteConverter.from_keras_model(model)
