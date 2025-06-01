@@ -1,2 +1,2 @@
-npm install
-npm install recharts
+# npm install
+# npm install recharts
