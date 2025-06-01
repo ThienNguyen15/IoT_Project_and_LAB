@@ -1,1 +1,2 @@
-# coreiot_webapp
+npm install
+npm install recharts
