@@ -3,3 +3,5 @@
 !main.cpp
 !model.h
 !platformio.ini
+!web/
+!web/**
