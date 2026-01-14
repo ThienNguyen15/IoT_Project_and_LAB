@@ -5,7 +5,7 @@
 
 <br>
 
-# Starter Kit for IoT Projects at ACLAB-HCMUT
+# Internet of Things LAB (ACLAB-HCMUT)
 
 ## Libraries:
 - ESPAsyncWebServer
@@ -17,4 +17,4 @@
 2. Upload Filesystem Image Using Platformio.
 3. Flash Firmware.
 4. Exit Bootloader by Pressing Reset.
-5. To build and upload filesystem image (SPIFF): Platformio Extension -> "Build Filesystem Image" -> "Upload Filesystem Image"
+5. To build and upload filesystem image (SPIFF): Platformio Extension -> "Build Filesystem Image" -> "Upload Filesystem Image."
